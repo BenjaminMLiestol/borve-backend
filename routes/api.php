@@ -2,6 +2,11 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\StatisticsController;
+use App\Http\Controllers\Auth\LoginController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,3 +22,33 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::prefix('users')->group(function () {
+    Route::get('/', [UserController::class, 'index']);
+    Route::post('/', [UserController::class, 'store']);
+    Route::put('/{userId}', [UserController::class, 'update']);
+    Route::delete('/', [UserController::class, 'destroy']);
+    Route::post('/login', [LoginController::class, 'login']);
+});
+
+Route::prefix('customers')->group(function () {
+    Route::post('/', [CustomerController::class, 'create']);
+    Route::get('/', [CustomerController::class, 'index']);
+});
+
+Route::group(['prefix' => 'customers/data'], function () {
+    Route::get('/total-customers', [StatisticsController::class, 'totalCustomers']);
+});
+
+Route::group(['prefix' => 'orders/data'], function () {
+    Route::get('/total-revenue', [StatisticsController::class, 'totalRevenue']);
+    Route::get('/total-orders', [StatisticsController::class, 'totalOrders']);
+});
+
+Route::prefix('orders')->group(function () {
+    Route::get('/', [OrderController::class, 'index']);
+    Route::post('/', [OrderController::class, 'store']);
+    Route::put('/', [OrderController::class, 'update']);
+    Route::delete('/', [OrderController::class, 'destroy']);
+});
+

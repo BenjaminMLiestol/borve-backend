@@ -16,7 +16,7 @@ class UserController extends Controller
         $user_id = $request->query('user_id');
 
         if ($user_id !== null) {
-            $user = User::find($user_id);
+            $user = User::where('user_id', $user_id)->first();
 
             if ($user !== null && $user->deleted_at === null) {
                 return response()->json($this->buildUserResponse($user), 200);
