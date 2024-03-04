@@ -36,7 +36,7 @@ class UserController extends Controller
             'first_name' => 'required|string',
             'last_name' => 'required|string',
             'email' => 'required|email|unique:users',
-            'phone' => 'required|string',
+            'phone' => 'nullable|string',
             'password' => 'required|string',
         ]);
 
@@ -58,13 +58,13 @@ class UserController extends Controller
             'last_name' => $validatedData['last_name'],
             'email' => $validatedData['email'],
             'phone' => $validatedData['phone'],
-            'user_id' => Str::slug(Str::random(15)), // Generate a unique user_id
+            'user_id' => Str::slug(Str::random(15)),
             'password' => $hashedPassword,
         ]);
 
         try {
             $newUser->save();
-            return response()->json(['message' => 'User created successfully'], 201);
+            return response()->json(['message' => 'User created successfully', 'data' => $newUser], 201);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
