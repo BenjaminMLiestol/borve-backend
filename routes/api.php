@@ -5,8 +5,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\StatisticsController;
-use App\Http\Controllers\Auth\LoginController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -28,7 +30,7 @@ Route::prefix('users')->group(function () {
     Route::post('/', [UserController::class, 'store']);
     Route::put('/{userId}', [UserController::class, 'update']);
     Route::delete('/', [UserController::class, 'destroy']);
-    Route::post('/login', [LoginController::class, 'login']);
+    Route::post('/login', [AuthController::class, 'login']);
 });
 
 Route::prefix('customers')->group(function () {
@@ -52,3 +54,6 @@ Route::prefix('orders')->group(function () {
     Route::delete('/', [OrderController::class, 'destroy']);
 });
 
+Route::prefix('feedback')->group(function () {
+    Route::post('/', [FeedbackController::class, 'store']);
+});
