@@ -35,7 +35,7 @@ class OrderController extends Controller
         'sort_by' => $validatedData['sort_by'] ?? 'created_at',
     ];
 
-   $query = DB::table('orders')
+$query = DB::table('orders')
     ->join('customers', 'orders.customer_id', '=', 'customers.customer_id')
     ->whereNull('orders.deleted_at')
     ->when($queryParams['date_from'], function ($query) use ($queryParams) {
@@ -46,14 +46,19 @@ class OrderController extends Controller
     })
     ->when($queryParams['customer_id'], function ($query) use ($queryParams) {
         return $query->where('orders.customer_id', $queryParams['customer_id']);
-    })
-    ->orderBy($queryParams['sort_by'], $queryParams['sort']);
+    });
 
+// Order by clause based on the requested sort column
+if ($queryParams['sort_by'] === 'created_at') {
+    $query->orderBy('orders.created_at', $queryParams['sort']);
+} else {
+    $query->orderBy($queryParams['sort_by'], $queryParams['sort']);
+}
 
-
-    $result = $queryParams['paginate']
-        ? $query->paginate($queryParams['limit'], ['*'], 'page', $queryParams['page'])
-        : $query->limit($queryParams['limit'])->get();
+// Execute the query
+$result = $queryParams['paginate']
+    ? $query->paginate($queryParams['limit'], ['*'], 'page', $queryParams['page'])
+    : $query->limit($queryParams['limit'])->get();
 
     $orderList = $result->map(function ($order) {
         return [
