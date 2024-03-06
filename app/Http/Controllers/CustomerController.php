@@ -16,7 +16,7 @@ class CustomerController extends Controller
             'contact_name' => 'required|string',
             'address' => 'required|string',
             'city' => 'required|string',
-            'zip_code' => 'required|string',
+            'postal_code' => 'required|string',
             'country' => 'required|string',
             'contact_email' => 'required|email',
             'contact_phone' => 'required|string',
@@ -35,16 +35,16 @@ class CustomerController extends Controller
 
     public function index(Request $request)
     {
-        // Define validation rules for query parameters
         $parser = [
             'date_from' => 'nullable|date_format:Y-m-d',
             'date_to' => 'nullable|date_format:Y-m-d',
             'customer_id' => 'nullable|string',
             'sort' => 'nullable|in:asc,desc',
-            'paginate' => 'nullable|boolean',
+            'paginate' => 'nullable|in:0,1', // Use 0 and 1 instead of boolean
             'limit' => 'nullable|integer',
             'page' => 'nullable|integer',
         ];
+
     
         // Validate the request data
         $validatedData = $request->validate($parser);
@@ -55,7 +55,7 @@ class CustomerController extends Controller
             'date_to' => $validatedData['date_to'] ?? null,
             'customer_id' => $validatedData['customer_id'] ?? null,
             'sort' => $validatedData['sort'] ?? 'asc',
-            'paginate' => $validatedData['paginate'] ?? true,
+            'paginate' => $validatedData['paginate'] === '1' ? true : false,
             'limit' => $validatedData['limit'] ?? 10,
             'page' => $validatedData['page'] ?? 1,
         ];
@@ -80,7 +80,7 @@ class CustomerController extends Controller
                 'contact_name' => $customer->contact_name,
                 'address' => $customer->address,
                 'city' => $customer->city,
-                'zip_code' => $customer->zip_code,
+                'zip_code' => $customer->postal_code,
                 'country' => $customer->country,
                 'contact_email' => $customer->contact_email,
                 'contact_phone' => $customer->contact_phone,
@@ -89,6 +89,15 @@ class CustomerController extends Controller
             ];
         });
     
-        return response()->json($customerList, 200);
+        $totalCustomers = $customers->count();
+        $totalPages = ceil($totalCustomers / $queryParams['limit']);
+        $currentPage = $queryParams['page'];
+
+    return response()->json([
+        'customers' => $customerList,
+        'total_pages' => $totalPages,
+        'total_customers' => $totalCustomers,
+        'current_page' => $currentPage
+    ], 200);
     }
 }
