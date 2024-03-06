@@ -57,6 +57,7 @@ class OrderController extends Controller
 
     $orderList = $result->map(function ($order) {
         return [
+            'order_id' => $order->order_id,
             'customer' => $order->company_name,
             'price' => $order->price,
             'address_from' => $order->address_from,
@@ -154,22 +155,22 @@ class OrderController extends Controller
     public function destroy(Request $request)
     {
         $request->validate([
-            'order_id' => 'required|integer',
+            'order_id' => 'required|string',
         ]);
 
         $orderId = $request->input('order_id');
 
-        $order = Order::find($orderId);
+        $order = Order::where('order_id', $orderId)->first();
 
         if ($order) {
             try {
                 $order->delete();
-                return response()->json(['message' => 'Order deleted successfully'], 200);
+                return response()->json(['message' => 'Ordre slettet'], 200);
             } catch (\Exception $e) {
                 return response()->json(['error' => $e->getMessage()], 500);
             }
         } else {
-            return response()->json(['error' => 'Order not found'], 404);
+            return response()->json(['error' => 'Fant ikke ordre, prøv igjen senere'], 404);
         }
     }
 }
