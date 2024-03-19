@@ -57,3 +57,5 @@ Route::prefix('orders')->group(function () {
 Route::prefix('feedback')->group(function () {
     Route::post('/', [FeedbackController::class, 'store']);
 });
+
+ Route::get('/me', [UserController::class, 'me']);

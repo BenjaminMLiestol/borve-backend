@@ -116,6 +116,17 @@ class UserController extends Controller
         }
     }
 
+    public function me(Request $request)
+    {
+        $user = $request->user();
+
+        if ($user) {
+            return response()->json($this->buildUserResponse($user), 200);
+        } else {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+    }
+
     private function buildUserResponse(User $user)
     {
         return [
