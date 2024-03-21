@@ -70,16 +70,17 @@ class UserController extends Controller
         }
     }
 
-    public function update(Request $request, $userId)
+    public function update(Request $request)
     {
         $data = $request->validate([
+            'user_id' => 'required|string',
             'first_name' => 'required|string',
             'last_name' => 'required|string',
             'email' => 'required|email',
             'phone' => 'required|string',
         ]);
 
-        $user = User::where('user_id', $userId)->first();
+        $user = User::where('user_id', $data['user_id'])->first();
 
         if ($user) {
             $user->first_name = $data['first_name'];

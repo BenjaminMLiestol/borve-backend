@@ -25,12 +25,16 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+   Route::post('/login', [AuthController::class, 'login']);
 Route::prefix('users')->group(function () {
-    Route::get('/', [UserController::class, 'index']);
-    Route::post('/', [UserController::class, 'store']);
-    Route::put('/{userId}', [UserController::class, 'update']);
-    Route::delete('/', [UserController::class, 'destroy']);
-    Route::post('/login', [AuthController::class, 'login']);
+ 
+
+   Route::middleware('auth')->group(function () {
+        Route::get('/', [UserController::class, 'index']);
+        Route::post('/', [UserController::class, 'store']);
+        Route::put('/', [UserController::class, 'update']);
+        Route::delete('/', [UserController::class, 'destroy']);
+    });
 });
 
 Route::prefix('customers')->group(function () {
@@ -43,8 +47,10 @@ Route::group(['prefix' => 'customers/data'], function () {
 });
 
 Route::group(['prefix' => 'orders/data'], function () {
+       Route::middleware('auth')->group(function () {
     Route::get('/total-revenue', [StatisticsController::class, 'totalRevenue']);
     Route::get('/total-orders', [StatisticsController::class, 'totalOrders']);
+     });
 });
 
 Route::prefix('orders')->group(function () {
