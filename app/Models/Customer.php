@@ -18,7 +18,6 @@ class Customer extends Model
         'address',
         'city',
         'postal_code',
-        'country',
         'contact_email',
         'contact_phone',
     ];

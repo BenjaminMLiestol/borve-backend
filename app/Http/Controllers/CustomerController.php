@@ -12,14 +12,14 @@ class CustomerController extends Controller
     {
         // Validate the request data
         $validatedData = $request->validate([
+            'customer_id' => 'required|string|unique:customers',
             'company_name' => 'required|string',
             'contact_name' => 'required|string',
             'address' => 'required|string',
             'city' => 'required|string',
             'postal_code' => 'required|string',
-            'country' => 'required|string',
-            'contact_email' => 'required|email',
-            'contact_phone' => 'required|string',
+            'contact_email' => 'nullable|email',
+            'contact_phone' => 'nullable|string',
         ]);
 
         // Create a new customer
@@ -45,10 +45,9 @@ class CustomerController extends Controller
             'page' => 'nullable|integer',
         ];
 
-    
         // Validate the request data
         $validatedData = $request->validate($parser);
-    
+
         // Build the query parameters
         $queryParams = [
             'date_from' => $validatedData['date_from'] ?? null,
@@ -59,45 +58,45 @@ class CustomerController extends Controller
             'limit' => $validatedData['limit'] ?? 10,
             'page' => $validatedData['page'] ?? 1,
         ];
-    
+
         // Query customers based on the parameters using the Query Builder
         $query = DB::table('customers')
             ->when($queryParams['date_from'], fn ($query) => $query->whereDate('created_at', '>=', $queryParams['date_from']))
             ->when($queryParams['date_to'], fn ($query) => $query->whereDate('created_at', '<=', $queryParams['date_to']))
             ->when($queryParams['customer_id'], fn ($query) => $query->where('customer_id', $queryParams['customer_id']))
             ->orderBy('created_at', $queryParams['sort'] === 'desc' ? 'desc' : 'asc');
-    
+
         // Paginate the results if needed
         $customers = $queryParams['paginate']
             ? $query->paginate($queryParams['limit'], ['*'], 'page', $queryParams['page'])
             : $query->get();
-    
+
         // Map the customers to the desired format
         $customerList = $customers->map(function ($customer) {
             return [
-                'id' => $customer->customer_id,
+                'id' => $customer->id,
+                'customer_id' => $customer->customer_id,
                 'company_name' => $customer->company_name,
                 'contact_name' => $customer->contact_name,
                 'address' => $customer->address,
                 'city' => $customer->city,
-                'zip_code' => $customer->postal_code,
-                'country' => $customer->country,
+                'postal_code' => $customer->postal_code,
                 'contact_email' => $customer->contact_email,
                 'contact_phone' => $customer->contact_phone,
                 'created_at' => $customer->created_at,
                 'updated_at' => $customer->updated_at,
             ];
         });
-    
+
         $totalCustomers = $customers->count();
         $totalPages = ceil($totalCustomers / $queryParams['limit']);
         $currentPage = $queryParams['page'];
 
-    return response()->json([
-        'customers' => $customerList,
-        'total_pages' => $totalPages,
-        'total_customers' => $totalCustomers,
-        'current_page' => $currentPage
-    ], 200);
+        return response()->json([
+            'customers' => $customerList,
+            'total_pages' => $totalPages,
+            'total_customers' => $totalCustomers,
+            'current_page' => $currentPage
+        ], 200);
     }
 }

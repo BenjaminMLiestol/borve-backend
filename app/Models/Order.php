@@ -33,15 +33,8 @@ class Order extends Model
         'order_id',
         'customer_id',
         'price',
-        'address_from',
-        'address_to',
-        'start_time',
-        'status',
-        'time_spent',
-        'km_driven',
-        'comment',
-        'passenger_count',
         'created_by',
+        'status',
         'completed_at',
     ];
 
@@ -51,7 +44,6 @@ class Order extends Model
      * @var array
      */
     protected $casts = [
-        'start_time' => 'datetime',
         'completed_at' => 'datetime',
     ];
 
@@ -60,7 +52,7 @@ class Order extends Model
      */
     public function customer()
     {
-        return $this->belongsTo(Customer::class, 'customer_id', 'customer_id');
+        return $this->belongsTo(Customer::class);
     }
 
     /**
@@ -68,6 +60,6 @@ class Order extends Model
      */
     public function createdBy()
     {
-        return $this->belongsTo(User::class, 'created_by', 'user_id');
+        return $this->belongsTo(User::class, 'created_by');
     }
 }
