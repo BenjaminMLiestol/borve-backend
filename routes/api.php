@@ -25,16 +25,15 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-   Route::post('/login', [AuthController::class, 'login']);
-Route::prefix('users')->group(function () {
- 
+Route::post('/login', [AuthController::class, 'login']);
 
+Route::prefix('users')->group(function () {
    Route::middleware('auth')->group(function () {
         Route::get('/', [UserController::class, 'index']);
-        Route::post('/', [UserController::class, 'store']);
         Route::put('/', [UserController::class, 'update']);
         Route::delete('/', [UserController::class, 'destroy']);
     });
+    Route::post('/', [UserController::class, 'store']);
 });
 
 Route::prefix('customers')->group(function () {
@@ -42,16 +41,6 @@ Route::prefix('customers')->group(function () {
     Route::get('/', [CustomerController::class, 'index']);
 });
 
-Route::group(['prefix' => 'customers/data'], function () {
-    Route::get('/total-customers', [StatisticsController::class, 'totalCustomers']);
-});
-
-Route::group(['prefix' => 'orders/data'], function () {
-       Route::middleware('auth')->group(function () {
-    Route::get('/total-revenue', [StatisticsController::class, 'totalRevenue']);
-    Route::get('/total-orders', [StatisticsController::class, 'totalOrders']);
-     });
-});
 
 Route::prefix('orders')->group(function () {
     Route::get('/', [OrderController::class, 'index']);
@@ -60,8 +49,4 @@ Route::prefix('orders')->group(function () {
     Route::delete('/', [OrderController::class, 'destroy']);
 });
 
-Route::prefix('feedback')->group(function () {
-    Route::post('/', [FeedbackController::class, 'store']);
-});
-
- Route::get('/me', [UserController::class, 'me']);
+Route::get('/me', [UserController::class, 'me']);

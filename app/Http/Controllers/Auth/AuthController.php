@@ -29,10 +29,13 @@ class AuthController extends Controller
         $credentials = request(['email', 'password']);
 
         if (! $token = auth()->attempt($credentials)) {
-            return response()->json(['error' => 'Feil e-post eller passord'], 401);
+            return response()->json(['error' => 'Feil e-post eller passord'], 403);
         }
-
         $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['error' => 'Feil e-post eller passord'], 403);
+        }
 
         return $this->respondWithToken($token, $user);
     }

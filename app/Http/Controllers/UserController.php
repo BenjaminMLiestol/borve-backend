@@ -36,7 +36,6 @@ class UserController extends Controller
             'first_name' => 'required|string',
             'last_name' => 'required|string',
             'email' => 'required|email|unique:users',
-            'phone' => 'nullable|string',
             'password' => 'required|string',
         ]);
 
@@ -57,7 +56,6 @@ class UserController extends Controller
             'first_name' => $validatedData['first_name'],
             'last_name' => $validatedData['last_name'],
             'email' => $validatedData['email'],
-            'phone' => $validatedData['phone'],
             'user_id' => Str::slug(Str::random(15)),
             'password' => $hashedPassword,
         ]);
