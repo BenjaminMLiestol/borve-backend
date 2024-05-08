@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Product extends Model
 {
@@ -36,5 +37,18 @@ class Product extends Model
     public function orderLines()
     {
         return $this->hasMany(OrderLine::class);
+    }
+
+     /**
+     * The "booted" method of the model.
+     *
+     * @return void
+     */
+    protected static function booted()
+    {
+        // Generate a unique product_id before saving
+        static::creating(function ($product) {
+            $product->product_id = Str::uuid();
+        });
     }
 }

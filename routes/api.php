@@ -5,10 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CustomerController;
-use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\StatisticsController;
-
+use App\Http\Controllers\ProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,6 +39,14 @@ Route::prefix('customers')->group(function () {
     Route::get('/', [CustomerController::class, 'index']);
 });
 
+Route::prefix('products')->group(function () { 
+    Route::middleware('auth')->group(function () {
+        Route::get('/', [ProductController::class, 'index']);
+        Route::post('/', [ProductController::class, 'store']);
+        Route::put('/', [ProductController::class, 'update']);
+        Route::delete('/', [ProductController::class, 'destroy']);
+    });
+});
 
 Route::prefix('orders')->group(function () {
     Route::get('/', [OrderController::class, 'index']);
